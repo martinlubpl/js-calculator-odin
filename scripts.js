@@ -34,6 +34,8 @@ function operate(n1, n2, operator) {
             break;
 
         case "/":
+            // division by 0
+            
             return divide(n1, n2)
             break;
 
@@ -56,15 +58,18 @@ for (let i = 0; i < numbers.length; i++) {
 const operators = document.querySelectorAll('.operator');
 for (let i = 0; i < operators.length; i++) {
     operators[i].addEventListener('click', function () {
-        if(!operator) {
+        if (!firstNum) return;
+        if (!operator) {
             operator = this.id;
             updateDisplay();
+        } else if (!secondNum) {
+            operator = this.id;
+            updateDisplay()
         } else {
             let result = operate(Number(firstNum), Number(secondNum), operator);
-            nextOperator = operator;
-            updateDisplay(result=result);
+            nextOperator = this.id;
+            updateDisplay(result = result);
         }
-        
     })
 }
 
@@ -72,30 +77,51 @@ const equals = document.querySelector('.equals')
 equals.addEventListener('click', function () {
     if (firstNum && secondNum) {
         let result = operate(Number(firstNum), Number(secondNum), operator);
-        updateDisplay(result=result);
+        updateDisplay(result = result);
     }
 })
 
 
 
 
-function updateDisplay(result=0) {
+function updateDisplay(result = 0) {
     if (operator == '') {
         current.innerText = firstNum;
     } else if (!result) {
         history.innerText = firstNum + operator;
         if (secondNum) current.innerText = secondNum;
-    } else {
+    } else if (result == Infinity) {
+        history.innerText = "LOL error";
+        current.innerText = "World ends in 3...2...1...";
+        firstNum = "";
+        secondNum = "";
+        operator = "";
+    }
+    
+    else {
         if (nextOperator) {
-            history.innerText = result + operator;
+            console.log(nextOperator)
+            history.innerText = result + nextOperator;
+            operator = nextOperator;
             nextOperator = '';
+
         } else {
             history.innerText = firstNum + operator + secondNum + "=";
+            operator = '';
         }
-        
+
         current.innerText = result;
-        firstNum  = result;
-        operator = '';
+        firstNum = result;
+
         secondNum = '';
     }
 }
+
+const clearBtn = document.querySelector('.clear')
+clearBtn.addEventListener('click', function () {
+    firstNum = '';
+    secondNum = '';
+    operator = '';
+    current.innerText = '';
+    history.innerText = '';
+})
